@@ -22,8 +22,8 @@
 */
 
 
-//#define LOG_NDEBUG 0
-//#define LOG_PARAMETERS
+#define LOG_NDEBUG 0
+#define LOG_PARAMETERS
 
 #define LOG_TAG "CameraWrapper"
 #include <cutils/log.h>
@@ -109,7 +109,6 @@ static char * camera_fixup_getparams(int id, const char * settings)
         params.set(android::CameraParameters::KEY_SKIN_TONE_ENHANCEMENT, "enable");
     }
 
-
     android::String8 strParams = params.flatten();
     char *ret = strdup(strParams.string());
 
@@ -121,18 +120,6 @@ char * camera_fixup_setparams(int id, const char * settings)
 {
     android::CameraParameters params;
     params.unflatten(android::String8(settings));
-
-    if (params.get("recording-hint")) {
-        const char* isRecording = params.get("recording-hint");
-
-  // Enable ZSL mode when recording
-    if (strcmp(isRecording, "true") == 0)
-        params.set("camera-mode", "1");
-
-    } else {
-    // Disable ZSL when using camera
-        params.set("camera-mode", "0");
-    } 
 
     android::String8 strParams = params.flatten();
     char *ret = strdup(strParams.string());
@@ -150,7 +137,7 @@ int camera_set_preview_window(struct camera_device * device,
 {
     ALOGV("%s->%08X->%08X", __FUNCTION__, (uintptr_t)device, (uintptr_t)(((wrapper_camera_device_t*)device)->vendor));
 
-    if(!device)
+    if(!device || !window)
         return -EINVAL;
 
     return VENDOR_CALL(device, set_preview_window, window);
@@ -326,13 +313,7 @@ int camera_take_picture(struct camera_device * device)
     if(!device)
         return -EINVAL;
 
-    // We safely avoid returning the exact result of VENDOR_CALL here. If ZSL
-    // really bumps fast, take_picture will be called while a picture is already being
-    // taken, leading to "picture already running" error, crashing Gallery app. Afaik,
-    // there is no issue doing 0 (error appears in logcat anyway if needed).
-    VENDOR_CALL(device, take_picture);
-
-    return 0;
+    return VENDOR_CALL(device, take_picture);
 }
 
 int camera_cancel_picture(struct camera_device * device)
@@ -358,7 +339,7 @@ int camera_set_parameters(struct camera_device * device, const char *params)
     tmp = camera_fixup_setparams(CAMERA_ID(device), params);
 
 #ifdef LOG_PARAMETERS
-    __android_log_write(ANDROID_LOG_VERBOSE, LOG_TAG, tmp+350);
+    __android_log_write(ANDROID_LOG_VERBOSE, LOG_TAG, tmp);
 #endif
 
     int ret = VENDOR_CALL(device, set_parameters, tmp);
