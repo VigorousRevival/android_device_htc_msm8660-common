@@ -47,8 +47,7 @@ PRODUCT_PACKAGES += \
     audio.primary.msm8660 \
     libaudioutils \
     audio.usb.default \
-    libaudio-resampler \
-    audio_policy.conf
+    libaudio-resampler
 
 # Camera wrapper
 PRODUCT_PACKAGES += \
@@ -104,6 +103,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     make_ext4fs \
     setup_fs
+
+# audio policy
+PRODUCT_COPY_FILES += \
+    device/htc/msm8660-common/configs/audio_policy.conf:system/etc/audio_policy.conf
 
 # MSM8660 firmware
 PRODUCT_COPY_FILES += \
