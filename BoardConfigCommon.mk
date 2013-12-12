@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 BOARD_VENDOR := htc
 
 TARGET_SPECIFIC_HEADER_PATH := device/htc/msm8660-common/include
@@ -19,33 +20,47 @@ TARGET_SPECIFIC_HEADER_PATH := device/htc/msm8660-common/include
 # Bootloader
 TARGET_NO_BOOTLOADER := true
 
-# Kernel
-TARGET_KERNEL_SOURCE := kernel/htc/msm8660
-
 # Platform
 TARGET_BOARD_PLATFORM := msm8660
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 
 # Architecture
+TARGET_CPU_VARIANT := cortex-a8
+ARCH_ARM_HAVE_ARMV7A := true
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
-TARGET_CPU_VARIANT := cortex-a8
+#TARGET_ARCH_LOWMEM := true
 TARGET_CPU_SMP := true
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+TARGET_ENABLE_AV_ENHANCEMENTS := true
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
 # Flags
 COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
 
+# Graphics
+TARGET_USES_ION := true
+TARGET_HAS_OLD_QCOM_ION := true
+BOARD_HAVE_OLD_ION_API := true
+
+# FB legacy
+BOARD_EGL_NEEDS_LEGACY_FB := true
+
+# Use legacy MM heap behavior
+TARGET_DISPLAY_INSECURE_MM_HEAP := true
+
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true
-BOARD_USES_LEGACY_QCOM := true
+TARGET_QCOM_DISPLAY_VARIANT := legacy
+TARGET_QCOM_MEDIA_VARIANT := legacy
 
 # Audio
-COMMON_GLOBAL_CFLAGS += -DHTC_ACOUSTIC_AUDIO
-COMMON_GLOBAL_CFLAGS += -DQCOM_ACDB_ENABLED -DLEGACY_QCOM_VOICE
-BOARD_QCOM_TUNNEL_LPA_ENABLED := false
+COMMON_GLOBAL_CFLAGS += -DHTC_ACOUSTIC_AUDIO -DLEGACY_QCOM_VOICE
 BOARD_USES_LEGACY_ALSA_AUDIO := true
+TARGET_QCOM_AUDIO_VARIANT := caf
+BOARD_QCOM_TUNNEL_LPA_ENABLED := false
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -56,42 +71,45 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR ?= device/htc/msm8660-common/bluetoo
 # Camera
 BOARD_USES_QCOM_LEGACY_CAM_PARAMS := true
 BOARD_USES_PMEM_ADSP := true
+BOARD_USES_PMEM_CAMERA := true
 COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB -DNO_UPDATE_PREVIEW
 BOARD_HAVE_HTC_FFC := true
 BOARD_NEEDS_MEMORYHEAPPMEM := true
-# TARGET_DISABLE_ARM_PIE := true
+TARGET_DISABLE_ARM_PIE := true
+
 # Camera wrapper
 COMMON_GLOBAL_CFLAGS += -DDISABLE_HW_ID_MATCH_CHECK
-COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+
+# Filesystem
+BOARD_VOLD_MAX_PARTITIONS := 36
 
 # QCOM BSP (Board Support Package)
 TARGET_USES_QCOM_BSP := true
 COMMON_GLOBAL_CFLAGS += -DQCOM_BSP
 
-# Filesystem
-BOARD_VOLD_MAX_PARTITIONS := 36
-
 # GPS
 BOARD_USES_QCOM_GPS := true
 BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 50000
 
+# Sensors
+COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+
 # Graphics
-BOARD_USE_MHEAP_SCREENSHOT := true
-TARGET_QCOM_DISPLAY_VARIANT := legacy
-BOARD_USES_LEGACY_MEDIA := true
-TARGET_QCOM_MEDIA_VARIANT := legacy
-TARGET_ENABLE_AV_ENHANCEMENTS := true
-TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
-TARGET_DOESNT_USE_FENCE_SYNC := true
-TARGET_DISPLAY_INSECURE_MM_HEAP := true
 COMMON_GLOBAL_CFLAGS += -DQCOM_NO_SECURE_PLAYBACK -DREFRESH_RATE=60 -DHTC_RGBA_8888_OFFSET
 COMMON_GLOBAL_CFLAGS += -DGENLOCK_IOC_DREADLOCK -DUSE_GENLOCK
 COMMON_GLOBAL_CFLAGS += -DFORCE_SCREENSHOT_CPU_PATH
 USE_OPENGL_RENDERER := true
 TARGET_NO_HW_VSYNC := true
-TARGET_USES_ION := true
+TARGET_DOESNT_USE_FENCE_SYNC := true
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
+BOARD_EGL_NEEDS_FNW := true
+#TARGET_QCOM_HDMI_OUT := true
+#TARGET_QCOM_HDMI_RESOLUTION_AUTO := true
 TARGET_USES_C2D_COMPOSITION := true
+TARGET_USES_POST_PROCESSING := true
 BOARD_EGL_CFG := device/htc/msm8660-common/configs/egl.cfg
+
+
 
 # Wifi related defines
 WIFI_BAND                        := 802_11_ABG
@@ -112,34 +130,12 @@ BOARD_LEGACY_NL80211_STA_EVENTS := true
 TARGET_PROVIDES_LIBLIGHT := true
 TARGET_PROVIDES_LIBLIGHTS := true
 
+# Webkit
+ENABLE_WEBGL := true
+TARGET_FORCE_CPU_UPLOAD := true
+
 # Hardware tunables
 BOARD_HARDWARE_CLASS := device/htc/msm8660-common/cmhw
 
-# SELinux
-BOARD_SEPOLICY_DIRS += \
-    device/samsung/msm8660-common/sepolicy
-
-BOARD_SEPOLICY_UNION += \
-    app.te \
-    bluetooth.te \
-    device.te \
-    domain.te \
-    drmserver.te \
-    file_contexts \
-    files \
-    file.te \
-    hci_init.te \
-    healthd.te \
-    init.te \
-    init_shell.te \
-    keystore.te \
-    kickstart.te \
-    mediaserver.te \
-    rild.te \
-    surfaceflinger.te \
-    system.te \
-    ueventd.te \
-    untrusted_app.te \
-    vold.te \
-    wpa.te \
-    wpa_socket.te
+# Preload the boot animation to avoid jerkiness
+TARGET_BOOTANIMATION_PRELOAD := true

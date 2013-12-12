@@ -47,11 +47,12 @@ PRODUCT_PACKAGES += \
     audio.primary.msm8660 \
     libaudioutils \
     audio.usb.default \
-    libaudio-resampler
+    libaudio-resampler 
 
-# Camera wrapper
+# Camera 
 PRODUCT_PACKAGES += \
-    camera.msm8660
+    camera.msm8660 \
+    Camera2
 	
 # Graphics
 PRODUCT_PACKAGES += \
@@ -133,4 +134,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     dev.pm.dyn_samplingrate=1 \
     ro.opengles.version=131072 \
-    ro.bq.gpu_to_cpu_unsupported=1
+    ro.config.low_ram=true \
+    ro.zygote.disable_gl_preload=true \
+    debug.hwui.render_dirty_regions=false
