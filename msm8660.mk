@@ -57,9 +57,6 @@ PRODUCT_PACKAGES += \
     libaudio-resampler \
     libaudioutils
 
-PRODUCT_COPY_FILES += \
-    device/htc/msm8660-common/configs/audio_policy.conf:system/etc/audio_policy.conf
-
 # GPS
 PRODUCT_COPY_FILES += \
     device/common/gps/gps.conf_US_SUPL:system/etc/gps.conf
